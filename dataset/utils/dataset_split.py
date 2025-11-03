@@ -37,6 +37,12 @@ def train_test_split(node, edge, labels):
     train_idx = np.array(list(G_train.nodes()))
     test_idx = np.array(list(G_test.nodes()))
 
+    # Relabel each subgraph to 0..N_sub-1 to match sliced features
+    train_map = {old: i for i, old in enumerate(train_idx)}
+    test_map  = {old: i for i, old in enumerate(test_idx)}
+    G_train = nx.relabel_nodes(G_train, train_map, copy=True)
+    G_test  = nx.relabel_nodes(G_test,  test_map,  copy=True)
+
     X_train, X_test = node[train_idx], node[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     train_edge_index = edge_index(G_train)
