@@ -14,10 +14,11 @@ from dataset import photo, questions, tolokers, weibo
 os.makedirs("best_model", exist_ok=True)
 
 cfg = CFG()
-cfg.DATASET = "weibo"
+cfg.DATASET = "tolokers"
 cfg.MODEL = "GCN"
 cfg.GNN_LAYERS = 2
 cfg.FEATURE_OUT = 2
+cfg.LEARNING_RATE = 3e-4
 
 def seed(seed_value):
     torch.manual_seed(seed_value)
@@ -53,18 +54,18 @@ if cfg.DATASET == "weibo":
     X_train, train_edge_index, y_train, X_test, test_edge_index, y_test = weibo.load_weibo()
     attr_size = features_size[0][1]
 elif cfg.DATASET == "tolokers":
-    X_train, train_edge_index, y_train, X_test, test_edge_index, y_test = tolokers.load_weibo()
+    X_train, train_edge_index, y_train, X_test, test_edge_index, y_test = tolokers.load_tolokers()
     attr_size = features_size[1][1]
 elif cfg.DATASET == "photo":
-    X_train, train_edge_index, y_train, X_test, test_edge_index, y_test= photo.load_weibo()
-    attr_size = features_size[1][1]
+    X_train, train_edge_index, y_train, X_test, test_edge_index, y_test= photo.load_photo()
+    attr_size = features_size[2][1]
 elif cfg.DATASET == "questions":
-    X_train, train_edge_index, y_train, X_test, test_edge_index, y_test= questions.load_weibo()
-    attr_size = features_size[1][1]
+    X_train, train_edge_index, y_train, X_test, test_edge_index, y_test= questions.load_questions()
+    attr_size = features_size[3][1]
 else:
     print("Please select the available dataset!!")
 
-print(f"Using {cfg.DATASET} model")
+print(f"Using {cfg.DATASET} data")
 X_train = X_train.toarray() 
 X_train = torch.tensor(X_train, dtype = torch.float32).to(cfg.DEVICE)
 X_test = X_test.toarray() 
