@@ -1,0 +1,8 @@
+photo.mat
+questions.mat
+tolokers.mat
+weibo.mat
+gnn_anomaly
+*.DS_Store
+__pycache__/
+*.py[cod]
