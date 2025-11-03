@@ -5,13 +5,15 @@ from torch import nn, optim
 from torch_geometric.utils import from_networkx
 import torch.nn.functional as F
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+import os
 from scipy import sparse
 from utils.config import CFG
 from model.GNN import GCN, GAT, GraphSAGE, GIN
 from dataset import photo, questions, tolokers, weibo
 
-cfg = CFG()
+os.makedirs("best_model", exist_ok=True)
 
+cfg = CFG()
 cfg.DATASET = "weibo"
 cfg.MODEL = "GCN"
 cfg.GNN_LAYERS = 2
@@ -74,6 +76,7 @@ test_edge_index = test_edge_index.to(cfg.DEVICE)
 
 model = gnn_selected(cfg.GNN_LAYERS,attr_size, cfg.FEATURE_OUT).to(cfg.DEVICE)
 opt = optim.Adam(model.parameters(), lr=cfg.LEARNING_RATE, weight_decay = 1e-5)
+best_accuracy = 0
 # criterion = nn.CrossEntropyLoss()
 criterion = nn.BCEWithLogitsLoss()
 history = {
@@ -122,6 +125,11 @@ for epoch in range(1, cfg.EPOCHS + 1):
     # Evaluate every 5 epochs
     if epoch % 5 == 0:
         metrics = evaluate(model, X_test, test_edge_index, y_test)
+        if best_accuracy< metrics["acc"]:
+            best_accuracy = metrics["acc"]
+            print("Saving model!!")
+            torch.save({"model_state_dict": model.state_dict(),
+            "optimizer_state_dict": opt.state_dict(),}, os.path.join("best_model",f"best_{cfg.MODEL}_{cfg.DATASET}.pt"))
         history["eval_loss"].append(metrics["loss"])
         history["eval_acc"].append(metrics["acc"])
         history["eval_f1"].append(metrics["f1"])

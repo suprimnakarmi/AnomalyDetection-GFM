@@ -6,3 +6,4 @@ gnn_anomaly
 *.DS_Store
 __pycache__/
 *.py[cod]
+best_model/
